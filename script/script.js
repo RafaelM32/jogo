@@ -4,19 +4,27 @@ var FPS = 20
 
 class Player{
 
-    constructor(imagem_padrao, elemento_html){
-        this.direita = true
-        this.esquerda = false
-        this.imagem_atual  = imagem_padrao
-        this.imagem_padrao = imagem_padrao
-        this.imagem_padrao_direita = imagem_padrao
-        this.imagem_padrao_esquerda = "img/andar/esquerda/0.png"
+    constructor(imagem_padrao_direita, imagem_padrao_esquerda, elemento_html){
+        
+
+        //Carregamento de imagens do player (exceto as de animação)
+        this.imagem_atual  = imagem_padrao_direita
+        this.imagem_padrao_direita = imagem_padrao_direita
+        this.imagem_padrao_esquerda = imagem_padrao_esquerda
         this.elemento_html = elemento_html
-        this.animacao_atual = null
+
+        //Carregamento de animações
         this.animacoes ={
-            andar_direita:{ diretorio: "img/andar/direita/", numero_da_imagem_atual: 0},
-            andar_esquerda:{ diretorio: "img/andar/esquerda/", numero_da_imagem_atual: 0}
+            andar_direita:{ diretorio: "img/andar/direita/", numero_da_imagem_atual: 0, qtd_max_img: 5},
+            andar_esquerda:{ diretorio: "img/andar/esquerda/", numero_da_imagem_atual: 0, qtd_max_img: 5}
         }
+        
+        //Estado do player
+        this.andando_direita  = false
+        this.andando_esquerda = false
+        this.animacao_atual = null
+        
+        
     }
 
 
@@ -26,55 +34,85 @@ class Player{
     }
 
 
-    
-    andar_para_direita(t){
+    //Animação
+    animacao_para_direita(t){
         const animacao = t.animacoes.andar_direita
         const img = animacao.diretorio+animacao.numero_da_imagem_atual+".png"
         t.mudar_imagem(img)
         animacao.numero_da_imagem_atual += 1
-        if(animacao.numero_da_imagem_atual == 6){
+        if(animacao.numero_da_imagem_atual == animacao.qtd_max_img + 1){
             animacao.numero_da_imagem_atual=0
         }
     }
 
-    andar_para_esquerda(t){
+
+    //Animação
+    animacao_para_esquerda(t){
         const animacao = t.animacoes.andar_esquerda
         const img = animacao.diretorio+animacao.numero_da_imagem_atual+".png"
         t.mudar_imagem(img)
         animacao.numero_da_imagem_atual += 1
-        if(animacao.numero_da_imagem_atual == 6){
+        if(animacao.numero_da_imagem_atual == animacao.qtd_max_img + 1){
             animacao.numero_da_imagem_atual=0
+        }    }
+
+    //Ação
+    andar_para_direita(){
+        if(!this.andando_direita){
+            clearInterval(this.animacao_atual)
+            this.animacao_atual = null
+            this.animacao_atual = setInterval(this.animacao_para_direita,1000/FPS,this)
+            this.andando_direita = true
+            this.andando_esquerda = false
         }
     }
 
-    andar(){
-        if(this.animacao_atual == null){
-            if(this.direita){
-                this.animacao_atual = setInterval(this.andar_para_direita,1000/FPS,this)
-            }else if(this.esquerda){
-                this.animacao_atual = setInterval(this.andar_para_esquerda,1000/FPS,this)
-            }
-            
+    //Ação
+    andar_para_esquerda(){
+        if(!this.andando_esquerda){
+            clearInterval(this.animacao_atual)
+            this.animacao_atual = null
+            this.animacao_atual = setInterval(this.animacao_para_esquerda,1000/FPS,this)
+            this.andando_esquerda = true
+            this.andando_direita = false
         }
     }
 
+    //Ação
     parar(){
         clearInterval(this.animacao_atual)
         this.animacao_atual = null
-        if(this.direita){
-            this.mudar_imagem(this.imagem_padrao_direita)
-        }else if(this.esquerda){
-            this.mudar_imagem(this.imagem_padrao_esquerda)
-        }
-        
     }
     
+    //Configuração de controles
     controlador(){
-        document.addEventListener("keydown",(key)=>{if(key.key == 'd'){player.esquerda = false;player.direita = true;player.andar()}})
-        document.addEventListener("keyup",(key)=>{if(key.key == 'd'){player.parar()}})
 
-        document.addEventListener("keydown",(key)=>{if(key.key == 'a'){player.direita = false;player.esquerda = true;player.andar()}})
-        document.addEventListener("keyup",(key)=>{if(key.key == 'a'){player.parar()}})
+        //Ativando a movimentação para direita a partir do acionamento do teclado
+        document.addEventListener("keydown",(key)=>{if(key.key == 'd' || key.key == "ArrowRight"){this.andar_para_direita()}})
+        
+        //Volta a imagem padrão caso não haja outros movimentos
+        document.addEventListener("keyup",(key)=>{if(key.key == 'd' || key.key == "ArrowRight"){
+            if(!this.andando_esquerda){
+                this.parar()
+                this.andando_direita = false
+                this.mudar_imagem(this.imagem_padrao_direita)
+            }
+        }})
+
+
+        //Ativando a movimentação para esquerda a partir do acionamento do teclado
+        document.addEventListener("keydown",(key)=>{if(key.key == 'a' || key.key == "ArrowLeft"){this.andar_para_esquerda()}})
+        
+
+        //Volta a imagem padrão caso não haja outros movimentos
+        document.addEventListener("keyup",(key)=>{if(key.key == 'a' || key.key == "ArrowLeft"){
+            if(!this.andando_direita){
+                this.parar()
+                this.andando_esquerda = false
+                this.mudar_imagem(this.imagem_padrao_esquerda)
+            }
+        }})
+
     }
 
 }
@@ -83,6 +121,6 @@ class Player{
 
 
 
-const player = new Player("img/andar/direita/0.png",document.getElementById("player"))
+const player = new Player("img/andar/direita/0.png","img/andar/esquerda/0.png",document.getElementById("player"))
 player.controlador()
 
