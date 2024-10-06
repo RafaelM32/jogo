@@ -1,0 +1,15 @@
+#jogo{
+    display: block;
+    margin: auto;
+    margin-top: 4vw;
+    width: 50vw;
+    height: 30vw;
+    border: solid 0.4vw black;
+}
+
+#player{
+    margin-top: 18.5vw;
+    margin-left: 22vw;
+    width: 4vw;
+    border: solid 0.2vw black;
+}
