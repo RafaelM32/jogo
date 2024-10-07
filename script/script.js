@@ -1,6 +1,6 @@
 const teste = document.getElementById("hora")
 let contador = 0
-var FPS = 20
+var FPS = 10
 
 class Player{
 
@@ -15,8 +15,8 @@ class Player{
 
         //Carregamento de animações
         this.animacoes ={
-            andar_direita:{ diretorio: "img/andar/direita/", numero_da_imagem_atual: 0, qtd_max_img: 5},
-            andar_esquerda:{ diretorio: "img/andar/esquerda/", numero_da_imagem_atual: 0, qtd_max_img: 5}
+            andar_direita:{ diretorio: "img/andar/direita/", numero_da_imagem_atual: 0, qtd_max_img: 4},
+            andar_esquerda:{ diretorio: "img/andar/esquerda/", numero_da_imagem_atual: 0, qtd_max_img: 4}
         }
         
         //Estado do player
