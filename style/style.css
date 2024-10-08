@@ -1,3 +1,23 @@
+#wrapper{
+    display: grid;
+    grid-template-columns: 15% 70% 15%;
+}
+#menu_esquerdo{
+    margin-top: -1vw;
+    margin-left: -1vw;
+    position: relative;
+    z-index: 1;
+    background-color: bisque;
+}
+#teste{
+    margin-top: -1vw;
+    margin-right: -1vw;
+    position: relative;
+    z-index: 1;
+    height: 70vw;
+    background-color: bisque;
+}
+
 #jogo{
     display: block;
     margin: auto;
@@ -8,8 +28,26 @@
 }
 
 #player{
+    position: absolute;
+    z-index: 1;
     margin-top: 18.3vw;
     margin-left: 22vw;
     width: 6.8vw;
     border: solid 0.2vw black;
+}
+
+#cenario_1{
+    position: absolute;
+    z-index: 0;
+    width: 100vw;
+    margin-top: -11vw;
+    margin-left: -24.5vw;
+}
+
+#cenario_2{
+    position: absolute;
+    z-index: 0;
+    width: 100vw;
+    margin-top: -11vw;
+    margin-left: 75.5vw;
 }
