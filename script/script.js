@@ -69,16 +69,28 @@ class Player{
 
     //Animacao de pular
     animacao_pular_direita(t){
-        const animacao = t.animacoes.pular_direita
-        const img = animacao.diretorio+animacao.numero_da_imagem_atual+".png"
-        t.mudar_imagem(img)
+        let animacao_direita = t.animacoes.pular_direita
+        let animacao_esquerda = t.animacoes.pular_esquerda
+        if(t.direita){
+            const img = animacao_direita.diretorio+animacao_direita.numero_da_imagem_atual+".png"
+            t.mudar_imagem(img)
+        }else{
+            const img = animacao_esquerda.diretorio+animacao_direita.numero_da_imagem_atual+".png"
+            t.mudar_imagem(img)
+        }
+        
+        
 
-        if(animacao.numero_da_imagem_atual != 4 || !t.pulando){
-            animacao.numero_da_imagem_atual += 1
+        if(animacao_direita.numero_da_imagem_atual != 4 || !t.pulando){
+            animacao_direita.numero_da_imagem_atual += 1
+        }
+
+        if(animacao_esquerda.numero_da_imagem_atual != 4 || !t.pulando){
+            animacao_esquerda.numero_da_imagem_atual += 1
         }
 
         
-        if(animacao.numero_da_imagem_atual == 3){
+        if(animacao_direita.numero_da_imagem_atual == 3 || animacao_esquerda.numero_da_imagem_atual == 3 ){
             t.pulando = true
         }
 
@@ -89,7 +101,8 @@ class Player{
 
         if(t.pos_y <=10){
             t.caindo = true
-            animacao.numero_da_imagem_atual += 1
+            animacao_direita.numero_da_imagem_atual += 1
+            animacao_esquerda.numero_da_imagem_atual += 1
         }
 
         if(t.pulando && t.caindo){
@@ -103,68 +116,25 @@ class Player{
         }
 
 
-        if(animacao.numero_da_imagem_atual == animacao.qtd_max_img + 1){
+        if(animacao_direita.numero_da_imagem_atual == animacao_direita.qtd_max_img + 1 || animacao_esquerda.numero_da_imagem_atual == animacao_direita.qtd_max_img + 1){
             clearInterval(t.animacao_atual)
             t.animacao_atual = null
-            animacao.numero_da_imagem_atual = 0
+            animacao_direita.numero_da_imagem_atual = 0
+            animacao_esquerda.numero_da_imagem_atual = 0
             if(t.andando_direita){
                 t.andando_direita = false
                 t.andar_para_direita()
-            }else if(t.direita){
+                }else if(t.andando_esquerda){ 
+                t.andando_esquerda = false
+                t.andar_para_esquerda() 
+                }else if(t.direita){
                 t.mudar_imagem(t.imagem_padrao_direita)
-            }else{
+                }else{
                 t.mudar_imagem(t.imagem_padrao_esquerda)
-            }
+                }
     }
     }
     //Animacao de pular
-    animacao_pular_esquerda(t){
-        const animacao = t.animacoes.pular_esquerda
-        const img = animacao.diretorio+animacao.numero_da_imagem_atual+".png"
-        t.mudar_imagem(img)
-
-        if(animacao.numero_da_imagem_atual != 4 || !t.pulando){
-            animacao.numero_da_imagem_atual += 1
-        }
-
-        
-        if(animacao.numero_da_imagem_atual == 3){
-            t.pulando = true
-        }
-
-        if(t.pulando && !t.caindo){
-            t.pos_y = t.pos_y - 0.2*velocidade_cenario
-            t.elemento_html.style.marginTop = `${t.pos_y}vw`
-        }
-
-        if(t.pos_y <=10){
-            t.caindo = true
-            animacao.numero_da_imagem_atual += 1
-        }
-
-        if(t.pulando && t.caindo){
-            t.pos_y = t.pos_y + 0.2*velocidade_cenario
-            t.elemento_html.style.marginTop = `${t.pos_y}vw`
-        }
-
-        if(t.pos_y == t.pos_y_inicial){
-            t.pulando = false
-            t.caindo = false
-        }
-
-
-        if(animacao.numero_da_imagem_atual == animacao.qtd_max_img + 1){
-            clearInterval(t.animacao_atual)
-            t.animacao_atual = null
-            animacao.numero_da_imagem_atual = 0
-            if(t.andando_esquerda){
-                t.andando_esquerda = false
-                t.andar_para_esquerda()
-            }else{
-                t.mudar_imagem(t.imagem_padrao_esquerda)
-            }
-        }
-    }
 
     //Ação
     andar_para_direita(){
@@ -220,7 +190,10 @@ class Player{
         document.addEventListener("keydown",(key)=>{if(key.key == 'd' || key.key == "ArrowRight"){
             if(!this.pulando){
                 this.andar_para_direita()
-            }}})
+            }
+            this.andando_esquerda = false
+            this.direita = true
+        }})
         
         //Volta a imagem padrão caso não haja outros movimentos
         document.addEventListener("keyup",(key)=>{if(key.key == 'd' || key.key == "ArrowRight"){
@@ -228,7 +201,7 @@ class Player{
                 this.parar()
                 this.mudar_imagem(this.imagem_padrao_direita)
             }
-            this.andando_direita = false
+            this.andando_direita = false;
         }})
         
 
@@ -238,6 +211,7 @@ class Player{
             if(!this.pulando){
             this.andar_para_esquerda()
             };
+            this.andando_direita = false
             this.direita = false
               
         }})
@@ -249,17 +223,10 @@ class Player{
                 this.parar()
                 this.mudar_imagem(this.imagem_padrao_esquerda)
             };
-            this.direita = true;    
             this.andando_esquerda = false;
         }})
 
-        document.addEventListener("keydown",(key)=>{if(key.key == ' ' || key.key == "ArrowUp"){
-            if(this.direita){
-                this.pular_para_direita()
-            }else{
-                this.pular_para_esquerda()
-            }
-            }})
+        document.addEventListener("keydown",(key)=>{if(key.key == ' ' || key.key == "ArrowUp"){this.pular_para_direita()}})
 
     }
 }
