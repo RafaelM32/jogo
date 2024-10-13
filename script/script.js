@@ -253,6 +253,30 @@ class Cenario{
         this.andando_esquerda = false
     }
 
+    limite_esquerdo(){
+        if(parseInt(this.elemento_html_1.src[51])==0 || parseInt(this.elemento_html_2.src[51])==0){
+            if(parseInt(this.elemento_html_1.src[51])==0){
+                return [true,this.posicao_atual_1]
+            }else{
+                return [true,this.posicao_atual_2]
+            }
+        }else{
+            return [false,0]
+        }
+    }
+
+    limite_direito(){
+        if(parseInt(this.elemento_html_1.src[51])==this.qtd_img || parseInt(this.elemento_html_2.src[51])==this.qtd_img){
+            if(parseInt(this.elemento_html_1.src[51])==this.qtd_img){
+                return [true,this.posicao_atual_1]
+            }else{
+                return [true,this.posicao_atual_2]
+            }
+        }else{
+            return [false,0]
+        }
+    }
+
     ultima_imagem(num_img){
         if(num_img == this.qtd_img){
             return true
@@ -299,10 +323,24 @@ class Cenario{
 
 
     reposiciona_elemento(vel,t){
-        t.posicao_atual_1 = t.posicao_atual_1 - 0.1*vel
-        t.posicao_atual_2 = t.posicao_atual_2 - 0.1*vel
-        t.elemento_html_1.style.marginLeft = t.posicao_atual_1.toString() + "vw"
-        t.elemento_html_2.style.marginLeft = t.posicao_atual_2.toString() + "vw"
+        if(vel >= 0 ){
+
+            if(!(t.limite_direito()[0] && t.limite_direito()[1] <= -24)){
+                t.posicao_atual_1 = t.posicao_atual_1 - 0.1*vel
+                t.posicao_atual_2 = t.posicao_atual_2 - 0.1*vel
+                t.elemento_html_1.style.marginLeft = t.posicao_atual_1.toString() + "vw"
+                t.elemento_html_2.style.marginLeft = t.posicao_atual_2.toString() + "vw"
+            }
+
+        }else{
+            if(!(t.limite_esquerdo()[0] && t.limite_esquerdo()[1] >= -24)){
+                t.posicao_atual_1 = t.posicao_atual_1 - 0.1*vel
+                t.posicao_atual_2 = t.posicao_atual_2 - 0.1*vel
+                t.elemento_html_1.style.marginLeft = t.posicao_atual_1.toString() + "vw"
+                t.elemento_html_2.style.marginLeft = t.posicao_atual_2.toString() + "vw"
+            }
+        }
+        
 
         if(t.posicao_atual_1 <= -120){
             t.posicao_atual_1 = t.posicao_atual_1 + 200
@@ -386,7 +424,7 @@ class Cenario{
 
 
 const player = new Player("img/player/andar/direita/0.png","img/player/andar/esquerda/0.png",document.getElementById("player"))
-const cenario = new Cenario("img/cenario/",4,document.getElementById("cenario_1"),document.getElementById("cenario_2"))
+const cenario = new Cenario("img/cenario/",5,document.getElementById("cenario_1"),document.getElementById("cenario_2"))
 player.controlador()
 cenario.controlador()
 
