@@ -4,6 +4,32 @@ var FPS = 10
 const velocidade_cenario = 20
 let _andando = true
 let player_centralizado = true
+const vies_chao = 45
+
+class Chao{
+
+    constructor(altura,comprimento){
+        this.altura = altura
+        this.comprimento = comprimento
+        this.div = this.criar_div()
+        this.pos_y = parseInt(this.div.style.marginTop.replace("vw",""))
+    }
+
+    criar_div(){
+        const div = document.createElement("div")
+        div.classList.add("chao")
+        div.style.marginTop =`${vies_chao - this.altura}vw`
+        return div
+    }
+
+    adicionar_chao_ao_cenario(cenario){
+        cenario.appendChild(this.div)
+    }
+
+    
+
+}
+
 
 class Player{
 
@@ -44,10 +70,8 @@ class Player{
     centralizado(){
         if(this.pos_x == this.pos_x_inicial){
             player_centralizado = true
-            console.log(this.pos_x_inicial)
         }else{
             player_centralizado = false
-            console.log(this.pos_x_inicial)
         }
     }
     
@@ -101,6 +125,18 @@ class Player{
 
     //Animacao de pular
     animacao_pular_direita(t){
+        if(!_andando && t.direita){
+            if(t.pos_x <= 53){
+                t.pos_x = t.pos_x +1
+                t.elemento_html.style.marginLeft = `${t.pos_x}vw`             
+            }
+        }else if(!_andando && !t.direita){
+            if(t.pos_x >= -10){
+                t.pos_x = t.pos_x -1
+                t.elemento_html.style.marginLeft = `${t.pos_x}vw`
+                
+            }
+        }
         let animacao_direita = t.animacoes.pular_direita
         let animacao_esquerda = t.animacoes.pular_esquerda
         if(t.direita){
@@ -164,7 +200,8 @@ class Player{
                 }else{
                 t.mudar_imagem(t.imagem_padrao_esquerda)
                 }
-    }
+        }
+        t.centralizado()
     }
     //Animacao de pular
 
@@ -264,6 +301,7 @@ class Player{
 }
 
 
+
 class Cenario{
 
 
@@ -283,6 +321,8 @@ class Cenario{
         this.animacao_atual = null
         this.andando_direita = false
         this.andando_esquerda = false
+
+        this.elementos_do_cenario = [{lista_de_chao: [new Chao(18.3,100)]}]
     }
 
     limite_esquerdo(){
@@ -469,6 +509,8 @@ class Cenario{
 
 const player = new Player("img/player/andar/direita/0.png","img/player/andar/esquerda/0.png",document.getElementById("player"))
 const cenario = new Cenario("img/cenario/",3,document.getElementById("cenario_1"),document.getElementById("cenario_2"))
+const chao = new Chao(15,100)
+chao.adicionar_chao_ao_cenario(document.getElementById("jogo"))
 cenario.controlador()
 player.controlador()
 
