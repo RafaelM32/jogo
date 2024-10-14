@@ -2,6 +2,8 @@ const teste = document.getElementById("hora")
 let contador = 0
 var FPS = 10
 const velocidade_cenario = 20
+let _andando = true
+let player_centralizado = true
 
 class Player{
 
@@ -15,6 +17,8 @@ class Player{
         this.elemento_html = elemento_html
         this.pos_y_inicial = 18.3
         this.pos_y = this.pos_y_inicial
+        this.pos_x_inicial = 22
+        this.pos_x = this.pos_x_inicial
 
         //Carregamento de animações
         this.animacoes ={
@@ -36,6 +40,17 @@ class Player{
         
         
     }
+    
+    centralizado(){
+        if(this.pos_x == this.pos_x_inicial){
+            player_centralizado = true
+            console.log(this.pos_x_inicial)
+        }else{
+            player_centralizado = false
+            console.log(this.pos_x_inicial)
+        }
+    }
+    
 
 
     mudar_imagem(img){
@@ -46,6 +61,12 @@ class Player{
 
     //Animação de andar
     animacao_para_direita(t){
+        if(!_andando){
+            if(t.pos_x <= 53){
+                t.pos_x = t.pos_x +1
+                t.elemento_html.style.marginLeft = `${t.pos_x}vw`             
+            }
+        }
         const animacao = t.animacoes.andar_direita
         const img = animacao.diretorio+animacao.numero_da_imagem_atual+".png"
         t.mudar_imagem(img)
@@ -53,11 +74,20 @@ class Player{
         if(animacao.numero_da_imagem_atual == animacao.qtd_max_img + 1){
             animacao.numero_da_imagem_atual=0
         }
+        
+        t.centralizado()
     }
 
 
     //Animação de andar
     animacao_para_esquerda(t){
+        if(!_andando){
+            if(t.pos_x >= -10){
+                t.pos_x = t.pos_x -1
+                t.elemento_html.style.marginLeft = `${t.pos_x}vw`
+                
+            }
+        }
         const animacao = t.animacoes.andar_esquerda
         const img = animacao.diretorio+animacao.numero_da_imagem_atual+".png"
         t.mudar_imagem(img)
@@ -65,6 +95,8 @@ class Player{
         if(animacao.numero_da_imagem_atual == animacao.qtd_max_img + 1){
             animacao.numero_da_imagem_atual=0
         }
+        
+        t.centralizado()
     }
 
     //Animacao de pular
@@ -326,18 +358,30 @@ class Cenario{
         if(vel >= 0 ){
 
             if(!(t.limite_direito()[0] && t.limite_direito()[1] <= -24)){
+                if(player_centralizado){
                 t.posicao_atual_1 = t.posicao_atual_1 - 0.1*vel
                 t.posicao_atual_2 = t.posicao_atual_2 - 0.1*vel
                 t.elemento_html_1.style.marginLeft = t.posicao_atual_1.toString() + "vw"
                 t.elemento_html_2.style.marginLeft = t.posicao_atual_2.toString() + "vw"
+                _andando = true
+                }
+                
+            }else{
+                _andando = false
             }
 
         }else{
             if(!(t.limite_esquerdo()[0] && t.limite_esquerdo()[1] >= -24)){
+                if(player_centralizado){
                 t.posicao_atual_1 = t.posicao_atual_1 - 0.1*vel
                 t.posicao_atual_2 = t.posicao_atual_2 - 0.1*vel
                 t.elemento_html_1.style.marginLeft = t.posicao_atual_1.toString() + "vw"
                 t.elemento_html_2.style.marginLeft = t.posicao_atual_2.toString() + "vw"
+                _andando = true
+                }
+                
+            }else{
+                _andando = false
             }
         }
         
@@ -424,7 +468,9 @@ class Cenario{
 
 
 const player = new Player("img/player/andar/direita/0.png","img/player/andar/esquerda/0.png",document.getElementById("player"))
-const cenario = new Cenario("img/cenario/",5,document.getElementById("cenario_1"),document.getElementById("cenario_2"))
-player.controlador()
+const cenario = new Cenario("img/cenario/",3,document.getElementById("cenario_1"),document.getElementById("cenario_2"))
 cenario.controlador()
+player.controlador()
+
+
 
